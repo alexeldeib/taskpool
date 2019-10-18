@@ -1,3 +1,4 @@
+package taskpool
 
 import (
 	"sync"
