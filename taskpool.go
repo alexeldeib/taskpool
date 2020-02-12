@@ -1,6 +1,7 @@
 package taskpool
 
 import (
+	"fmt"
 	"sync"
 )
 
@@ -69,6 +70,12 @@ func NewTask(f func() error) *Task {
 // Run runs a Task and does appropriate accounting via a
 // given sync.WorkGroup.
 func (t *Task) Run(wg *sync.WaitGroup) {
+	defer wg.Done()
+	defer func() {
+		if r := recover(); r != nil {
+			t.Err = fmt.Errorf("Panic: %v", r)
+		}
+	}()
+
 	t.Err = t.f()
-	wg.Done()
 }
